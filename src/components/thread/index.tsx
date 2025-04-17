@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
+import MapboxMap from "../MapboxMap";
 
 function StickyToBottomContent(props: {
   content: ReactNode;
@@ -45,7 +46,6 @@ function StickyToBottomContent(props: {
       <div ref={context.contentRef} className={props.contentClassName}>
         {props.content}
       </div>
-
       {props.footer}
     </div>
   );
@@ -53,7 +53,6 @@ function StickyToBottomContent(props: {
 
 function ScrollToBottom(props: { className?: string }) {
   const { isAtBottom, scrollToBottom } = useStickToBottomContext();
-
   if (isAtBottom) return null;
   return (
     <Button
@@ -95,11 +94,8 @@ export function Thread() {
     try {
       const message = (stream.error as any).message;
       if (!message || lastError.current === message) {
-        // Message has already been logged. do not modify ref, return early.
         return;
       }
-
-      // Message is defined, and it has not been logged yet. Save it, and send the error
       lastError.current = message;
       toast.error("An error occurred. Please try again.", {
         description: (
@@ -115,7 +111,6 @@ export function Thread() {
     }
   }, [stream.error]);
 
-  // TODO: this should be part of the useStream hook
   const prevMessageLength = useRef(0);
   useEffect(() => {
     if (
@@ -125,7 +120,6 @@ export function Thread() {
     ) {
       setFirstTokenReceived(true);
     }
-
     prevMessageLength.current = messages.length;
   }, [messages]);
 
@@ -147,11 +141,7 @@ export function Thread() {
         streamMode: ["values"],
         optimisticValues: (prev) => ({
           ...prev,
-          messages: [
-            ...(prev.messages ?? []),
-            ...toolMessages,
-            newHumanMessage,
-          ],
+          messages: [...(prev.messages ?? []), ...toolMessages, newHumanMessage],
         }),
       },
     );
@@ -162,7 +152,6 @@ export function Thread() {
   const handleRegenerate = (
     parentCheckpoint: Checkpoint | null | undefined,
   ) => {
-    // Do this so the loading state is correct
     prevMessageLength.current = prevMessageLength.current - 1;
     setFirstTokenReceived(false);
     stream.submit(undefined, {
@@ -175,6 +164,7 @@ export function Thread() {
 
   return (
     <div className="flex w-full h-screen overflow-hidden">
+      {/* Left Sidebar (Chat History) */}
       <div className="relative lg:flex hidden">
         <motion.div
           className="absolute h-full border-r bg-white overflow-hidden z-20"
@@ -196,6 +186,8 @@ export function Thread() {
           </div>
         </motion.div>
       </div>
+
+      {/* Main Chat Area */}
       <motion.div
         className={cn(
           "flex-1 flex flex-col min-w-0 overflow-hidden relative",
@@ -291,7 +283,7 @@ export function Thread() {
               !chatStarted && "flex flex-col items-stretch mt-[25vh]",
               chatStarted && "grid grid-rows-[1fr_auto]",
             )}
-            contentClassName="pt-8 pb-16  max-w-3xl mx-auto flex flex-col gap-4 w-full"
+            contentClassName="pt-8 pb-16 max-w-3xl mx-auto flex flex-col gap-4 w-full"
             content={
               <>
                 {messages
@@ -388,6 +380,13 @@ export function Thread() {
           />
         </StickToBottom>
       </motion.div>
+
+      {/* Right Panel (Mapbox Map) */}
+      <div className="relative flex-1 flex flex-col">
+        <div className="flex-1">
+          <MapboxMap />
+        </div>
+      </div>
     </div>
   );
 }

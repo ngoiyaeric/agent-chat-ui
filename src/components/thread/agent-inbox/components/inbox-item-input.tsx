@@ -8,6 +8,7 @@ import { MarkdownText } from "../../markdown-text";
 import { ActionRequest, HumanInterrupt } from "@langchain/langgraph/prebuilt";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
+import MapboxMap from "@/components/MapboxMap"; // Import the Mapbox map component
 
 function ResetButton({ handleReset }: { handleReset: () => void }) {
   return (
@@ -516,6 +517,7 @@ export function InboxItemInput({
           </p>
         )}
       </div>
+      <MapboxMap /> {/* Add the Mapbox map component to the right of the chat input */}
     </div>
   );
 }
