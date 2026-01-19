@@ -12,7 +12,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PanelRightOpen, PanelRightClose } from "lucide-react";
+import { PanelRightOpen, PanelRightClose, Zap, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 function ThreadList({
@@ -71,6 +72,7 @@ function ThreadHistoryLoading() {
 
 export default function ThreadHistory() {
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
+  const [creditsOpen, setCreditsOpen] = useState(false);
   const [chatHistoryOpen, setChatHistoryOpen] = useQueryState(
     "chatHistoryOpen",
     parseAsBoolean.withDefault(false),
@@ -91,21 +93,50 @@ export default function ThreadHistory() {
   return (
     <>
       <div className="hidden lg:flex flex-col border-r-[1px] border-slate-300 items-start justify-start gap-6 h-screen w-[300px] shrink-0 shadow-inner-right">
-        <div className="flex items-center justify-between w-full pt-1.5 px-4">
-          <Button
-            className="hover:bg-gray-100"
-            variant="ghost"
-            onClick={() => setChatHistoryOpen((p) => !p)}
-          >
-            {chatHistoryOpen ? (
-              <PanelRightOpen className="size-5" />
-            ) : (
-              <PanelRightClose className="size-5" />
+        <div className="flex flex-col w-full pt-1.5 px-4 gap-4">
+          <div className="flex items-center justify-between w-full">
+            <Button
+              className="hover:bg-gray-100"
+              variant="ghost"
+              onClick={() => setChatHistoryOpen((p) => !p)}
+            >
+              {chatHistoryOpen ? (
+                <PanelRightOpen className="size-5" />
+              ) : (
+                <PanelRightClose className="size-5" />
+              )}
+            </Button>
+            <h1 className="text-xl font-semibold tracking-tight">
+              Thread History
+            </h1>
+          </div>
+
+          <div className="w-full">
+            <Button
+              variant="outline"
+              className="w-full flex items-center justify-between bg-slate-50 border-slate-200 hover:bg-slate-100 transition-colors"
+              onClick={() => setCreditsOpen(!creditsOpen)}
+            >
+              <div className="flex items-center gap-2">
+                <Zap className="size-4 text-yellow-500 fill-yellow-500" />
+                <span className="font-medium">300 Credits</span>
+              </div>
+              {creditsOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+            </Button>
+            
+            {creditsOpen && (
+              <div className="mt-2 p-3 bg-white border border-slate-100 rounded-lg shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="flex justify-between items-center text-sm mb-2">
+                  <span className="text-slate-500">Free Balance</span>
+                  <span className="font-semibold">300</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-500">Daily Refresh</span>
+                  <span className="font-semibold">300</span>
+                </div>
+              </div>
             )}
-          </Button>
-          <h1 className="text-xl font-semibold tracking-tight">
-            Thread History
-          </h1>
+          </div>
         </div>
         {threadsLoading ? (
           <ThreadHistoryLoading />
