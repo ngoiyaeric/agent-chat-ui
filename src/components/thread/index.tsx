@@ -20,7 +20,9 @@ import {
   PanelRightOpen,
   PanelRightClose,
   SquarePen,
+  Tent,
 } from "lucide-react";
+import { useBilling } from "@/providers/BillingProvider";
 import { useQueryState, parseAsBoolean } from "nuqs";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 import ThreadHistory from "./history";
@@ -80,6 +82,7 @@ export function Thread() {
   const [input, setInput] = useState("");
   const [firstTokenReceived, setFirstTokenReceived] = useState(false);
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
+  const { openBilling } = useBilling();
 
   const stream = useStreamContext();
   const messages = stream.messages;
@@ -236,7 +239,7 @@ export function Thread() {
         {chatStarted && (
           <div className="flex items-center justify-between gap-3 p-2 pl-4 z-10 relative">
             <div className="flex items-center justify-start gap-2 relative">
-              <div className="absolute left-0 z-10">
+              <div className="absolute left-0 z-10 flex items-center gap-2">
                 {(!chatHistoryOpen || !isLargeScreen) && (
                   <Button
                     className="hover:bg-gray-100"
@@ -250,6 +253,14 @@ export function Thread() {
                     )}
                   </Button>
                 )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-gray-100"
+                  onClick={openBilling}
+                >
+                  <Tent className="size-5" />
+                </Button>
               </div>
               <motion.button
                 className="flex gap-2 items-center cursor-pointer"
